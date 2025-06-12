@@ -59,13 +59,10 @@
                     {% endif %}
                     <div class="card-body">
                         <a href="{% url "catalog:product" product.slug %}">
-                            <p class="card-title">{{ product.name }}
-                                {% comment %} {% autoescape off %}
-                                {% if product.headline %}
-                                {{ product.headline }}
-                                {% else %}
+                            <p class="card-title">
+                                {% comment %} {% autoescape off %}{% if product.headline %}{{ product.headline }}{% else %} {% endcomment %}
                                 {{ product.name }}
-                                {% endif %}{% endautoescape %} {% endcomment %}
+                                {% comment %} {% endif %}{% endautoescape %} {% endcomment %}
                             </p>
                         </a>
                         <p class="card-text ">{{ product.description|truncatechars:45 }}
