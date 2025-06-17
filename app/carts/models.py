@@ -8,7 +8,7 @@ class ClassQuerySet(models.QuerySet):
     def total_price(self):
         return sum(cart.product_prise() for cart in self)
 
-    def total_price(self):
+    def total_quantity(self):
         if self:
             return sum(cart.quantity for cart in self)
         return 0
