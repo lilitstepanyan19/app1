@@ -61,15 +61,18 @@ def cart_change(request):
 
     user_cart = get_user_cart(request)
 
-    context = {"carts": user_cart}
+    # context = {"carts": user_cart}
 
-    # if referer page is create_order add key orders: True to context
-    referer = request.META.get('HTTP_REFERER')
-    if reverse('orders:create_order') in referer:
-        context["order"] = True
+    # # if referer page is create_order add key orders: True to context
+    # referer = request.META.get('HTTP_REFERER')
+    # if reverse('orders:create_order') in referer:
+    #     context["order"] = True
+
+    # cart_items_html = render_to_string(
+    #     "carts/includes/included_cart.html", context, request=request)
 
     cart_items_html = render_to_string(
-        "carts/includes/included_cart.html", context, request=request)
+        "carts/includes/included_cart.html", {"carts": user_cart}, request=request)
 
     response_data = {
         "message": "Количество изменено",
