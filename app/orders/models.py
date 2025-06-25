@@ -1,12 +1,10 @@
 from django.db import models
-
-from django.db import models
-from goods.models import Product
+from goods.models import Products
 
 from users.models import User
 
 
-class OrderItemQueryset(models.QuerySet):
+class OrderitemQueryset(models.QuerySet):
     
     def total_price(self):
         return sum(cart.products_price() for cart in self)
@@ -38,7 +36,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(to=Order, on_delete=models.CASCADE, verbose_name="Заказ")
-    product = models.ForeignKey(to=Product, on_delete=models.SET_DEFAULT, null=True, verbose_name="Продукт", default=None)
+    product = models.ForeignKey(to=Products, on_delete=models.SET_DEFAULT, null=True, verbose_name="Продукт", default=None)
     name = models.CharField(max_length=150, verbose_name="Название")
     price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name="Цена")
     quantity = models.PositiveIntegerField(default=0, verbose_name="Количество")
@@ -51,7 +49,7 @@ class OrderItem(models.Model):
         verbose_name_plural = "Проданные товары"
         ordering = ("id",)
 
-    objects = OrderItemQueryset.as_manager()
+    objects = OrderitemQueryset.as_manager()
 
     def products_price(self):
         return round(self.product.sell_price() * self.quantity, 2)
