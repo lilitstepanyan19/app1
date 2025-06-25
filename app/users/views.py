@@ -1,10 +1,18 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.contrib import auth, messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
+from django.db.models import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, TemplateView, UpdateView
 from carts.models import Cart
-from users.forms import UserLoginForm, UserRegistrationForm, ProfileForm
+# from common.mixins import CacheMixin
+from orders.models import Order, OrderItem
+
+from users.forms import ProfileForm, UserLoginForm, UserRegistrationForm
 
 def login(request):
     if request.method == 'POST':
@@ -72,14 +80,23 @@ def profile(request):
         form = ProfileForm(data=request.POST, instance=request.user, files=request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Profile updated successfully')
+            messages.success(request, "Профайл успешно обновлен")
             return HttpResponseRedirect(reverse('user:profile'))
     else:
         form = ProfileForm(instance=request.user)
 
+    orders = Order.objects.filter(user=request.user).prefetch_related(
+                Prefetch(
+                    "orderitem_set",
+                    queryset=OrderItem.objects.select_related("product"),
+                )
+            ).order_by("-id")
+        
+
     context = {
-        'title' : 'Home - Profile',
-        'form' : form
+        'title': 'Home - Кабинет',
+        'form': form,
+        'orders': orders,
     }
     return render(request, 'users/profile.html', context)
 
